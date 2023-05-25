@@ -18,10 +18,10 @@ from langchain.document_loaders import (
 )
 
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
+from langchain.vectorstores import PGVector
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.docstore.document import Document
-from constants import CHROMA_SETTINGS
+from constants import PG_CONNECTION_STRING
 
 
 # Map file extensions to document loaders and their arguments
@@ -69,7 +69,6 @@ def load_documents(source_dir: str) -> List[Document]:
 
 def main():
     # Load environment variables
-    persist_directory = os.environ.get('PERSIST_DIRECTORY')
     source_directory = os.environ.get('SOURCE_DIRECTORY', 'source_documents')
     embeddings_model_name = os.environ.get('EMBEDDINGS_MODEL_NAME')
 
@@ -87,7 +86,7 @@ def main():
     embeddings = HuggingFaceEmbeddings(model_name=embeddings_model_name)
     
     # Create and store locally vectorstore
-    db = Chroma.from_documents(texts, embeddings, persist_directory=persist_directory, client_settings=CHROMA_SETTINGS)
+    db = PGVector.from_documents(texts, embeddings, connection_string=PG_CONNECTION_STRING)
     db.persist()
     db = None
 
